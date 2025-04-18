@@ -1,0 +1,7 @@
+flask 
+flask-cors 
+openai 
+redis 
+python-dotenv 
+werkzeug 
+PyMuPDF 
