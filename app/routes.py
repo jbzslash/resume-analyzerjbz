@@ -1,20 +1,3 @@
-from flask import Blueprint, request, jsonify
-from .utils import extract_text_from_pdf, get_resume_score
-from . import r, db
-from .models import Resume
-from werkzeug.utils import secure_filename
-
-resume_bp = Blueprint('resume', __name__)
-
-ALLOWED_EXTENSIONS = {'pdf', 'docx'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@resume_bp.route('/', methods=['GET'])
-def home():
-    return "✅ Resume Analyzer Backend is Running!"
-
 @resume_bp.route('/analyze', methods=['POST'])
 def analyze():
     if 'resume' not in request.files:
@@ -33,4 +16,10 @@ def analyze():
         r.zadd('leaderboard', {name: score})
 
         # Save to PostgreSQL
-        result = Resume
+        result = Resume(name=name, score=score)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify({"message": "Resume analyzed successfully", "score": score}), 200
+
+    return jsonify({"message": "Invalid file format"}), 400
