@@ -1,3 +1,24 @@
+from redis import Redis
+from flask import Blueprint, request, jsonify
+from .utils import extract_text_from_pdf, get_resume_score
+from . import r, db
+from .models import Resume
+from werkzeug.utils import secure_filename
+
+# Initialize Redis client (make sure r is initialized properly)
+r = Redis(host='localhost', port=6379, db=0)  # Update this with your actual Redis configuration
+
+resume_bp = Blueprint('resume', __name__)
+
+ALLOWED_EXTENSIONS = {'pdf', 'docx'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@resume_bp.route('/', methods=['GET'])
+def home():
+    return "✅ Resume Analyzer Backend is Running!"
+
 @resume_bp.route('/analyze', methods=['POST'])
 def analyze():
     if 'resume' not in request.files:
@@ -12,10 +33,10 @@ def analyze():
         score = get_resume_score(text)
         name = request.form.get('name', 'Anonymous')
 
-        # Save to Redis
+        # Save to Redis leaderboard (Ensure Redis is properly configured)
         r.zadd('leaderboard', {name: score})
 
-        # Save to PostgreSQL
+        # Save to PostgreSQL database
         result = Resume(name=name, score=score)
         db.session.add(result)
         db.session.commit()
