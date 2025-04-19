@@ -37,7 +37,4 @@ def test_resume():
     return jsonify({'text': text, 'score': score})
 
 # 🧪 Test Route for Redis Connectivity
-@resume_bp.route('/test-redis', methods=['GET'])
-def test_redis():
-    try:
-        r.set
+@resume_bp.route('/test-redis_
