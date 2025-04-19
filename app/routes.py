@@ -1,12 +1,8 @@
-from redis import Redis
 from flask import Blueprint, request, jsonify
 from .utils import extract_text_from_pdf, get_resume_score
 from . import r, db
 from .models import Resume
 from werkzeug.utils import secure_filename
-
-# Initialize Redis client (ensure this is done properly)
-r = Redis(host='localhost', port=6379, db=0)  # Adjust to match your actual Redis setup
 
 resume_bp = Blueprint('resume', __name__)
 
@@ -42,3 +38,5 @@ def analyze():
         db.session.commit()
 
         return jsonify({"message": "Resume analyzed successfully", "score": score}), 200
+
+    return jsonify({"message": "Invalid file format"}), 400
