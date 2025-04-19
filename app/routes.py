@@ -37,4 +37,10 @@ def test_resume():
     return jsonify({'text': text, 'score': score})
 
 # 🧪 Test Route for Redis Connectivity
-@resume_bp.route('/test-redis_
+@resume_bp.route('/test-redis', methods=['GET'])
+def test_redis():
+    try:
+        r.set('test_key', 'test_value')  # Example Redis command to test connectivity
+        return jsonify({"message": "Redis is connected!"}), 200
+    except Exception as e:
+        return jsonify({"message": f"Error connecting to Redis: {str(e)}"}), 500
