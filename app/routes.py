@@ -29,8 +29,11 @@ def analyze():
         score = get_resume_score(text)
         name = request.form.get('name', 'Anonymous')
 
-        # Save to Redis leaderboard
-        r.zadd('leaderboard', {name: score})
+        try:
+            # Save to Redis leaderboard
+            r.zadd('leaderboard', {name: score})
+        except Exception as e:
+            return jsonify({"message": f"Error saving to Redis: {str(e)}"}), 500
 
         # Save to PostgreSQL database
         result = Resume(name=name, score=score)
