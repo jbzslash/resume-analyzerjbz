@@ -5,8 +5,8 @@ from . import r, db
 from .models import Resume
 from werkzeug.utils import secure_filename
 
-# Initialize Redis client (make sure r is initialized properly)
-r = Redis(host='localhost', port=6379, db=0)  # Update this with your actual Redis configuration
+# Initialize Redis client (ensure this is done properly)
+r = Redis(host='localhost', port=6379, db=0)  # Adjust to match your actual Redis setup
 
 resume_bp = Blueprint('resume', __name__)
 
@@ -33,7 +33,7 @@ def analyze():
         score = get_resume_score(text)
         name = request.form.get('name', 'Anonymous')
 
-        # Save to Redis leaderboard (Ensure Redis is properly configured)
+        # Save to Redis leaderboard
         r.zadd('leaderboard', {name: score})
 
         # Save to PostgreSQL database
@@ -42,5 +42,3 @@ def analyze():
         db.session.commit()
 
         return jsonify({"message": "Resume analyzed successfully", "score": score}), 200
-
-    return jsonify({"message": "Invalid file format"}), 400
